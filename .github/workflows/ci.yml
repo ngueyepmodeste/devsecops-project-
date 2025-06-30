@@ -19,7 +19,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/alpha-one_key.pem
-          chmod 600 ~/.ssh/ec2-key.pem
+          chmod 600 ~/.ssh/alpha-one_key.pem
 
       - name: Terraform Init & Apply
         working-directory: terraform
@@ -39,7 +39,7 @@ jobs:
 
       - name: Install K3s (without Traefik)
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2-key.pem ubuntu@$EC2_IP \
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/alpha-one_key.pem ubuntu@$EC2_IP \
             "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
 
       - name: Install NGINX Ingress + cert-manager
@@ -52,7 +52,7 @@ jobs:
       - name: Deploy Kubernetes manifests
         run: |
           scp -i ~/.ssh/alpha-one_key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
-          ssh -i ~/.ssh/ec2-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
+          ssh -i ~/.ssh/alpha-one_key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
       
       - name: Security Scans
         run: |
