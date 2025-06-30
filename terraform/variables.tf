@@ -10,7 +10,7 @@ variable "instance_type" {
 
 variable "ami" {
   type = string
-  default = "ami-0df368112825f8d8f"
+  default = "ami-080e1f13689e07408"
 }
 
 variable "key_name" {
