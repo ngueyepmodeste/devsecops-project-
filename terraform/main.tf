@@ -2,11 +2,11 @@ provider "aws" {
   region = "eu-west-3"
 }
 
-resource "aws_instance" "k3s_node" {
-  ami           = "ami-0c02fb55956c7d316" # Ubuntu 22.04 LTS (Paris)
-  instance_type = "t2.medium"
-  key_name      = "alphaone-key"
-
+resource "aws_instance" "my-server" {
+  ami           = var.ami # Ubuntu 22.04 LTS (Paris)
+  instance_type = var.instance_type
+  key_name      = var.key_name
+  associate_public_ip_address = true
   security_groups = [aws_security_group.k3s_sg.name]
 
   tags = {
@@ -15,14 +15,13 @@ resource "aws_instance" "k3s_node" {
 
   provisioner "remote-exec" {
     inline = [
-      "curl -sfL https://get.k3s.io | sh -",
-      "sudo chmod 644 /etc/rancher/k3s/k3s.yaml"
+      " apt-get install docker.io -y "
     ]
 
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("~/.ssh/votre_clef.pem")
+      private_key = file("${var.pem_path}") # La clé privée est la .pem
       host        = self.public_ip
     }
   }

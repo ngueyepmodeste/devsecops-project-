@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ic-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ic-webapp
+  template:
+    metadata:
+      labels:
+        app: ic-webapp
+    spec:
+      containers:
+      - name: app
+        image: ngueyepmodeste/ic-webapp:1.0
+        ports:
+        - containerPort: 8080
