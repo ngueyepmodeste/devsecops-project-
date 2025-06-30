@@ -14,13 +14,6 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-      - name: Terraform Destroy
-        working-directory: terraform
-        continue-on-error: true   # <--- ne bloque pas si rien à détruire
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform destroy -auto-approve
 
       - name: Prepare PEM Key
         run: |
@@ -28,14 +21,22 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/alpha-one_key.pem
           chmod 600 ~/.ssh/alpha-one_key.pem
 
-      - name: Terraform Init & Apply
+      - name: Terraform Init
         working-directory: terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           terraform init
-          terraform apply -auto-approve
+      - name: Terraform Destroy & apply
+        working-directory: terraform
+        continue-on-error: true   # <--- ne bloque pas si rien à détruire
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        run: terraform destroy -auto-approve
+             terraform apply -auto-approve
 
       - name: Get EC2 Public IP
         id: get_ip
