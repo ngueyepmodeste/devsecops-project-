@@ -28,7 +28,9 @@ resource "aws_instance" "my-server" {
 }
 
 resource "aws_security_group" "k3s_sg" {
-  name = "k3s-allow"
+  tags = {
+    Name = "k3s-allow"
+  }
 
   ingress {
     from_port   = 22
