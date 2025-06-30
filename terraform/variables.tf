@@ -1,6 +1,6 @@
 variable "aws_region" {
   type = string
-  default = "eu-west-3"
+  default = "us-east-1"
 }
 
 variable "instance_type" {
@@ -10,7 +10,7 @@ variable "instance_type" {
 
 variable "ami" {
   type = string
-  default = "ami-0c02fb55956c7d316"
+  default = "ami-0df368112825f8d8f"
 }
 
 variable "key_name" {
