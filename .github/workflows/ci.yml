@@ -91,8 +91,12 @@ jobs:
 
       - name: Deploy Kubernetes manifests
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
+         scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
+         ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "
+           kubectl apply -f /home/ubuntu/k8s
+           kubectl get all -A"
+
+          
 
       - name: Security Scans
         run: |
