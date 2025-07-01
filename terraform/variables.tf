@@ -1,20 +1,19 @@
 variable "aws_region" {
   type = string
-  default = "us-east-1"
+  default = "eu-west-3"
 }
 
 variable "instance_type" {
   type = string
-  default = "t3.nano"
+  default = "t2.meduim"
 }
 
 variable "ami" {
   type = string
-  default = "ami-053b0d53c279acc90"
 }
 
 variable "key_name" {
   type = string
   description = "Nom du Key Pair AWS"
-  default = "alpha-one_key"
+  default = "devsecops-key"
 }
