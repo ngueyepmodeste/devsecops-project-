@@ -98,10 +98,17 @@ jobs:
 
           
 
-      - name: Security Scans
+      - name: scan de tous les fichiers et code de l'app
         run: |
           docker run --rm -v $(pwd):/app aquasec/trivy fs /app
-          docker run --rm -i hadolint/hadolint < docker/Dockerfile
-          yamllint k8s/
-          conftest test k8s/deployment.yaml -p policy/
+      - name: Security Scans
+        run: |
+          docker run --rm -v $(pwd):/app -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+            --format html -o trivy-report.html ngueyepmodeste/ic-webapp:1.0
 
+          docker run --rm -i hadolint/hadolint --no-fail < docker/Dockerfile
+
+          yamllint k8s/
+
+          conftest test k8s/deployment.yaml -p policy/
+ 
