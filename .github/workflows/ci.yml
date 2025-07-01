@@ -81,12 +81,12 @@ jobs:
           done
 
           echo \"Waiting for cert-manager deployments...\"
-          kubectl wait --for=condition=available --timeout=300s deployment/cert-manager -n cert-manager
-          kubectl wait --for=condition=available --timeout=300s deployment/cert-manager-webhook -n cert-manager
-          kubectl wait --for=condition=available --timeout=300s deployment/cert-manager-cainjector -n cert-manager
+          kubectl wait --for=condition=available --timeout=600s deployment/cert-manager -n cert-manager
+          kubectl wait --for=condition=available --timeout=600s deployment/cert-manager-webhook -n cert-manager
+          kubectl wait --for=condition=available --timeout=600s deployment/cert-manager-cainjector -n cert-manager
 
           echo \"Waiting for ingress-nginx deployment...\"
-          kubectl wait --for=condition=available --timeout=300s deployment/ingress-nginx-controller -n ingress-nginx'"
+          kubectl wait --for=condition=available --timeout=600s deployment/ingress-nginx-controller -n ingress-nginx'"
 
 
       - name: Deploy Kubernetes manifests
