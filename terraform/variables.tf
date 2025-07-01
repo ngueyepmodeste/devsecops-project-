@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "instance_type" {
   type = string
-  default = "t2.meduim"
+  default = "t2.medium"
 }
 
 variable "ami" {
