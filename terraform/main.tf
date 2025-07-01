@@ -1,9 +1,19 @@
 provider "aws" {
-  region = "eu-west-3"
+  region = "us-east-1"
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical - Ubuntu
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
 }
 
 resource "aws_instance" "my-server" {
-  ami           = var.ami # Ubuntu 22.04 LTS (Paris)
+  ami           = data.aws_ami.ubuntu.id # Ubuntu 22.04 LTS (virginie du nord)
   instance_type = var.instance_type
   key_name      = var.key_name
   associate_public_ip_address = true
