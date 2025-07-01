@@ -61,13 +61,14 @@ jobs:
 
       - name: Install K3s (without Traefik)
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP \
+            "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik --write-kubeconfig-mode 644' sh -"
 
       - name: Install NGINX Ingress + cert-manager
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP <<'EOF'
-            kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml
-            kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+         ssh -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "\
+           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml && \
+           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml"
 
 
       - name: Deploy Kubernetes manifests
@@ -81,3 +82,4 @@ jobs:
           docker run --rm -i hadolint/hadolint < docker/Dockerfile
           yamllint k8s/
           conftest test k8s/deployment.yaml -p policy/
+
