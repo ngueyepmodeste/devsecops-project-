@@ -70,6 +70,13 @@ jobs:
            kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml && \
            kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml"
 
+      - name: Wait for cert-manager and ingress-nginx to be ready
+        run: |
+          ssh -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "
+          kubectl wait --for=condition=available --timeout=180s deployment/cert-manager -n cert-manager &&
+          kubectl wait --for=condition=available --timeout=180s deployment/cert-manager-webhook -n cert-manager &&
+          kubectl wait --for=condition=available --timeout=180s deployment/ingress-nginx-controller -n ingress-nginx"
+
 
       - name: Deploy Kubernetes manifests
         run: |
