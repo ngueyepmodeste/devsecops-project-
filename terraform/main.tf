@@ -22,19 +22,6 @@ resource "aws_instance" "my-server" {
   tags = {
     Name = "devsecops-k3s"
   }
-
-  provisioner "remote-exec" {
-    inline = [
-      " apt-get install docker.io -y "
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("${var.pem_path}") # La clé privée est la .pem
-      host        = self.public_ip
-    }
-  }
 }
 
 resource "aws_security_group" "k3s_sg" {

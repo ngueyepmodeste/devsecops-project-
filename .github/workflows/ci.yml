@@ -49,6 +49,7 @@ jobs:
       - name: Install K3s (without Traefik)
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/alpha-one_key.pem ubuntu@$EC2_IP \
+            "apt-get install docker.io -y" \
             "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
 
       - name: Install NGINX Ingress + cert-manager

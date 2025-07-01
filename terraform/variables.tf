@@ -18,8 +18,3 @@ variable "key_name" {
   description = "Nom du Key Pair AWS"
   default = "alpha-one_key"
 }
-
-variable "pem_path" {
-  description = "Chemin vers la clé privée PEM"
-  default = "/root/.ssh/alpha-one_key.pem" # Attention, ce chemin sera créé par le pipeline
-}
