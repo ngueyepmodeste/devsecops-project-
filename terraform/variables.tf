@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "instance_type" {
   type = string
-  default = "m5d.xlarge"
+  default = "t3.micro"
 }
 
 variable "ami" {
