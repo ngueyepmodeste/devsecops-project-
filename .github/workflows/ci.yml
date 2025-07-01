@@ -14,11 +14,11 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
+      
       - name: Prepare PEM Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/devsecops-key.pem
+          printf "%s\n" "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/devsecops-key.pem
           chmod 600 ~/.ssh/devsecops-key.pem
 
       - name: Terraform Init
