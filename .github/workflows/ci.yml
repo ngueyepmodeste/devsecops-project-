@@ -103,12 +103,22 @@ jobs:
           docker run --rm -v $(pwd):/app aquasec/trivy fs /app
       - name: Security Scans
         run: |
-          docker run --rm -v $(pwd):/app -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
-            --format html -o trivy-report.html ngueyepmodeste/ic-webapp:1.0
-
+          docker run --rm \
+            -v $(pwd):/app \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy image \
+            --format template \
+            --template "@contrib/html.tpl" \
+            -o trivy-report.html \
+           ngueyepmodeste/ic-webapp:1.0
+  
           docker run --rm -i hadolint/hadolint --no-fail < docker/Dockerfile
 
           yamllint k8s/
-
+  
           conftest test k8s/deployment.yaml -p policy/
- 
+
+      - name: Copy Trivy report to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem trivy-report.html ubuntu@$EC2_IP:/home/ubuntu/
+
