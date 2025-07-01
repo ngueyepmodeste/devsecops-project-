@@ -1,6 +1,6 @@
 variable "aws_region" {
   type = string
-  default = "eu-west-3"
+  default = "eu-west-2"
 }
 
 variable "instance_type" {
@@ -10,5 +10,5 @@ variable "instance_type" {
 variable "key_name" {
   type = string
   description = "Nom du Key Pair AWS"
-  default = "devsecops-key"
+  default = "devsecops2-key"
 }

@@ -18,8 +18,8 @@ jobs:
       - name: Prepare PEM Key
         run: |
           mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/devsecops-key.pem
-          chmod 600 ~/.ssh/devsecops-key.pem
+          printf "%s\n" "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/devsecops2-key.pem
+          chmod 600 ~/.ssh/devsecops2-key.pem
 
       - name: Terraform Init
         working-directory: terraform
@@ -54,26 +54,26 @@ jobs:
       - name: Wait for SSH to be ready
         run: |
           for i in {1..15}; do
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP 'echo SSH ready' && break
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP 'echo SSH ready' && break
             echo "Waiting for SSH..."
             sleep 10
           done
 
       - name: Install K3s (without Traefik)
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
 
       - name: Install NGINX Ingress + cert-manager
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP <<'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP <<'EOF'
             kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml
             kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
 
 
       - name: Deploy Kubernetes manifests
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
 
       - name: Security Scans
         run: |
