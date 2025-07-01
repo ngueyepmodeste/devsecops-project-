@@ -18,7 +18,7 @@ jobs:
       - name: Prepare PEM Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY}}" > ~/.ssh/devsecops-key.pem
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/devsecops-key.pem
           chmod 600 ~/.ssh/devsecops-key.pem
 
       - name: Terraform Init
@@ -26,18 +26,22 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          terraform init
-      - name: Terraform Destroy & apply
+        run: terraform init
+
+      - name: Terraform Destroy (clean)
         working-directory: terraform
-        continue-on-error: true   # <--- ne bloque pas si rien à détruire
+        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform destroy -auto-approve -input=false
 
-        run: |
-          terraform destroy -auto-approve
-          terraform apply -auto-approve
+      - name: Terraform Apply
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform apply -auto-approve -input=false
 
       - name: Get EC2 Public IP
         id: get_ip
@@ -45,35 +49,35 @@ jobs:
         run: |
           IP=$(terraform output -raw ec2_public_ip)
           echo "EC2_IP=$IP" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Wait for SSH to be ready
+        run: |
+          for i in {1..15}; do
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP 'echo SSH ready' && break
+            echo "Waiting for SSH..."
+            sleep 10
+          done
 
       - name: Install K3s (without Traefik)
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP \
-            "apt-get install docker.io -y" \
-            "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--disable traefik' sh -"
 
       - name: Install NGINX Ingress + cert-manager
         run: |
-          ssh -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP <<'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP <<'EOF'
             kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.4/deploy/static/provider/cloud/deploy.yaml
             kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
 
 
       - name: Deploy Kubernetes manifests
         run: |
-          scp -i ~/.ssh/devsecops-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
-          ssh -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
-      
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem -r k8s ubuntu@$EC2_IP:/home/ubuntu/
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/devsecops-key.pem ubuntu@$EC2_IP "kubectl apply -f /home/ubuntu/k8s"
+
       - name: Security Scans
         run: |
-          # Scanner tout le dossier courant (y compris docker/ et policy/)
           docker run --rm -v $(pwd):/app aquasec/trivy fs /app
- 
-          # Linter le Dockerfile situé dans ./docker/
           docker run --rm -i hadolint/hadolint < docker/Dockerfile
- 
-          # Linter tous les fichiers YAML dans le dossier k8s/
           yamllint k8s/
-
-          # Tester la règle Conftest sur le manifeste Kubernetes avec le policy dans ./policy/
           conftest test k8s/deployment.yaml -p policy/
