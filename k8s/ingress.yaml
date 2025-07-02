@@ -1,3 +1,4 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,17 +8,17 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   tls:
-  - hosts:
-      - ic-app.example.com
-    secretName: ic-webapp-tls
+    - hosts:
+        - ic-app.example.com
+      secretName: ic-webapp-tls
   rules:
-  - host: ic-app.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: ic-webapp-service
-            port:
-              number: 80
+    - host: ic-app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ic-webapp-service
+                port:
+                  number: 80
