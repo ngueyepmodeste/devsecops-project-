@@ -18,3 +18,5 @@ spec:
           image: ngueyepmodeste/ic-webapp:1.0
           ports:
             - containerPort: 8080
+          securityContext:
+            runAsNonRoot: true
