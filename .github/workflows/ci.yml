@@ -101,11 +101,6 @@ jobs:
       - name: scan de tous les fichiers et code de l'app
         run: |
           docker run --rm -v $(pwd):/app aquasec/trivy fs /app
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get upgrade -y
-          apt-get install docker.io -y
       - name: Security Scans
         run: |
           docker run --rm \
