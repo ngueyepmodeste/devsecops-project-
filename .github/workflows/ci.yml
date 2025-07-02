@@ -105,7 +105,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get upgrade -y
-          apt-get install docker.io\
+          apt-get install docker.io -y
       - name: Security Scans
         run: |
           docker run --rm \
