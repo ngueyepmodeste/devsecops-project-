@@ -108,6 +108,8 @@ jobs:
           sudo mv conftest /usr/local/bin/
       - name: Security Scans
         run: |
+          mkdir -p trivy-templates
+          curl -o trivy-templates/html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
           docker run --rm \
             -v $(pwd):/app \
             -v /var/run/docker.sock:/var/run/docker.sock \
