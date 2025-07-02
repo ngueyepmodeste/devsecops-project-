@@ -115,7 +115,7 @@ jobs:
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy image \
             --format template \
-            --template "@contrib/html.tpl" \
+            --template "@/templates/html.tpl" \
             -o trivy-report.html \
            ngueyepmodeste/ic-webapp:1.0
   
