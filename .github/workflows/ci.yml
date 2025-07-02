@@ -129,8 +129,3 @@ jobs:
           yamllint k8s/
   
           conftest test k8s/deployment.yaml -p policy/
-
-      - name: Copy Trivy report to EC2
-        run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/devsecops2-key.pem trivy-report.html ubuntu@$EC2_IP:/home/ubuntu/
-
