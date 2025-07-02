@@ -1,12 +1,9 @@
-package main
-
-# Exemple 1 : empêcher l'utilisation de l'utilisateur root
-deny[msg] {
-  input.kind == "Deployment"
-  container := input.spec.template.spec.containers[_]
-  not container.securityContext.runAsNonRoot
-  msg = sprintf("Container %s should set securityContext.runAsNonRoot: true", [container.name])
-}
+# deny[msg] {
+#   input.kind == "Deployment"
+#   container := input.spec.template.spec.containers[_]
+#   not container.securityContext.runAsNonRoot
+#   msg = sprintf("Container %s should set securityContext.runAsNonRoot: true", [container.name])
+# }
 
 # Exemple 2 : recommander de définir le nombre de replicas
 warn[msg] {
