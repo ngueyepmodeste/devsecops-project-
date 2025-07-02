@@ -117,6 +117,7 @@ jobs:
           docker run --rm \
             -v $(pwd):/app \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            -v $(pwd)/trivy-templates:/templates \
             aquasec/trivy image \
             --format template \
             --template "@/templates/html.tpl" \
