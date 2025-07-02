@@ -110,6 +110,10 @@ jobs:
         run: |
           mkdir -p trivy-templates
           curl -o trivy-templates/html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+          
+          echo "Template downloaded:"
+          ls -l trivy-templates
+           
           docker run --rm \
             -v $(pwd):/app \
             -v /var/run/docker.sock:/var/run/docker.sock \
