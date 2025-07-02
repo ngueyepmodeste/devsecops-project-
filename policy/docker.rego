@@ -1,3 +1,5 @@
+package docker
+
 # deny[msg] {
 #   input.kind == "Deployment"
 #   container := input.spec.template.spec.containers[_]
